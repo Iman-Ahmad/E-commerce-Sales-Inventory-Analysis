@@ -97,6 +97,13 @@ products_count_by_category = products_df.groupby("category")["name"].count()
 print("Number of products by category:")
 print(products_count_by_category)
 
+highest_products_number_count_by_category = products_count_by_category.max()
+index_of_highest_products_count_by_category = products_count_by_category.idxmax()
+highest_products_count_by_category = products_count_by_category.loc[index_of_highest_products_count_by_category]
+
+print("Highest products count by category")
+print(index_of_highest_products_count_by_category, highest_products_count_by_category)
+
 ### Average product price per Category
 ### Средняя цена товара по категориям
 products_average_price_per_category = products_df.groupby("category")["price"].mean()
@@ -104,11 +111,19 @@ products_average_price_per_category = products_df.groupby("category")["price"].m
 print("Average products price per category:")
 print(products_average_price_per_category)
 
+### Category with the highest average price
+### Категория с самой высокой средней ценой
+categories_highest_average_price = products_average_price_per_category.max()
+index_of_the_category_with_highest_price = products_average_price_per_category.idxmax()
+
+print("The category with highest average price is:", index_of_the_category_with_highest_price)
+
 ### Out-of-stock products
 ### Товары, отсутствующие на складе
 print("Out-of-stock products")
 Out_of_stock_products = products_df[products_df["quantity"] == 0]["name"]
 print(Out_of_stock_products.to_list())
+
 
 #print("Number of rows after removing duplicates: ")
 #print(len(products_df))
@@ -186,7 +201,11 @@ highest_price_product = products_df.loc[highest_price_index]
 #print("highest priced product: ", highest_price_product)
 
 lowest_price = products_df["price"].min()
+lowest_price_index = products_df["price"].idxmin()
+lowest_price_product = products_df.loc[lowest_price_index]
+
 #print("Lowest product price: ", lowest_price)
+#print("Lowest priced product: ", lowest_price_product)
 
 #print("DataFrame with stock value:")
 #print(products_df)
@@ -199,10 +218,35 @@ lowest_price = products_df["price"].min()
 # -------------------------
 
 in_stock_products = products_df[products_df["quantity"] > 0]
+NumOf_All_Products = len(products_df)
+NumOf_products_is_stock = len(in_stock_products)
 
 #print("Products in stock:")
 #print(in_stock_products)
 
+### Which Category has the highest percentage of products in stock?
+### В какой категории самая высокая доля товаров в наличии?
+print("Category with the highest share of in-stock products:")
+in_stock_count_by_category = in_stock_products.groupby("category")["name"].count()
+total_count_by_category = products_df.groupby("category")["name"].count()
+percentage_in_stock_by_category = (in_stock_count_by_category / total_count_by_category) * 100
+
+print(percentage_in_stock_by_category)
+
+### Calculate the percentage of products with quantity > 0 out of all products
+### Доля товаров в наличии от общего количества товаров
+print("The percentage of in-stock products:")
+print((NumOf_products_is_stock/NumOf_All_Products)*100, "%")
+
+### Count available and unavailable products for each Category
+### Подсчитать доступные и недоступные товары по каждой категории
+print("vailable and unavailable products for each Category:")
+
+in_stock_v_out_of_stock = products_df.groupby("category").agg(total_products=("quantity", "count"), in_stock=("quantity", lambda x: (x > 0).sum()), Out_of_stock=("quantity", lambda x: (x == 0).sum()))
+print(in_stock_v_out_of_stock)
+
+### Filter products in stock with price > 50
+### Товары в наличии с ценой выше 50 долларов
 filtered_products = products_df[(products_df["quantity"] > 0) & (products_df["price"] > 50)]
 
 #print("Products in stock and price above 50:")
