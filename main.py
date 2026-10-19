@@ -126,6 +126,32 @@ def analyze_inventory(products_df):
         category_summary,
     )
 
+def analyze_stock_availability(products_df):
+    """Identify products that are out of stock."""
+
+    out_of_stock = products_df[
+        products_df["quantity"] == 0
+    ]
+
+    out_of_stock_count = len(out_of_stock)
+    total_products = len(products_df)
+
+    out_of_stock_percentage = (
+        out_of_stock_count / total_products * 100
+        if total_products > 0
+        else 0
+    )
+
+    print("\n--- Stock Availability Analysis ---")
+    print("Out-of-stock products:")
+    print(out_of_stock[["name", "category", "quantity"]])
+
+    print(
+        f"\nOut-of-stock percentage: "
+        f"{out_of_stock_percentage:.2f}%"
+    )
+
+    return out_of_stock
 
 # ==========================================
 # 4. DISPLAY RESULTS
@@ -192,6 +218,8 @@ def main():
         highest_value_product,
         category_summary,
     )
+
+    analyze_stock_availability(products_df)
 
 
 if __name__ == "__main__":
